@@ -10,6 +10,7 @@ use Flarum\Http\SlugManager;
 use Flarum\User\User;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Local\AcgnDatabase\Facts\{FactsMutation, FirstCompletion};
 
 final class Catalog
 {
@@ -79,7 +80,7 @@ final class Catalog
         $fields = Input::entity($data, $people);
         $table = $people ? 'acgn_people' : 'acgn_subjects';
         foreach (['aliases', 'tags'] as $key) if (isset($fields[$key])) $fields[$key] = json_encode($fields[$key], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-        $id = $this->db->transaction(function () use ($fields, $table, $id, $data, $actor, $people): int {
+        $write = function () use ($fields, $table, $id, $data, $actor, $people): int {
             $now = gmdate('Y-m-d H:i:s');
             if ($id === null) return $this->db->table($table)->insertGetId($fields + ['created_at' => $now, 'updated_at' => $now]);
             $row = $this->find($id, $actor, $people, true);
@@ -91,7 +92,9 @@ final class Catalog
             }
             $this->db->table($table)->where('id', $id)->update($fields + ['updated_at' => $now, 'revision' => $row->revision + 1]);
             return $id;
-        });
+        };
+        $id = $people ? $this->db->transaction($write, 3)
+            : (new FactsMutation($this->db))->run('acgn-catalog', 0, $id === null ? [] : [$id], [], 'subject.save', $write);
         return $this->detail($id, $actor, $people);
     }
 
@@ -100,11 +103,13 @@ final class Catalog
         $actor->assertRegistered();
         $actor->assertCan('acgn.delete');
         $archived = Input::boolean($data['archived'] ?? null, 'archived');
-        $this->db->transaction(function () use ($id, $data, $actor, $people, $archived): void {
+        $write = function () use ($id, $data, $actor, $people, $archived): void {
             $row = $this->find($id, $actor, $people, true);
             $this->assertRevision($data, $row);
             $this->db->table($people ? 'acgn_people' : 'acgn_subjects')->where('id', $id)->update(['archived' => $archived, 'revision' => $row->revision + 1, 'updated_at' => gmdate('Y-m-d H:i:s')]);
-        });
+        };
+        if ($people) $this->db->transaction($write, 3);
+        else (new FactsMutation($this->db))->run('acgn-catalog', 0, [$id], [], 'subject.archive', $write);
         return $this->detail($id, $actor, $people);
     }
 
@@ -113,14 +118,15 @@ final class Catalog
         $actor->assertRegistered();
         $actor->assertCan('acgn.collect');
         $fields = $delete ? [] : Input::record($data);
-        $this->db->transaction(function () use ($subject, $fields, $actor, $delete): void {
+        (new FactsMutation($this->db))->run('acgn-records', (int) $actor->id, [$subject], [], $delete ? 'record.delete' : 'record.save', function () use ($subject, $fields, $actor, $delete): void {
             $row = $this->find($subject, $actor, false, true);
             if ($row->archived) Input::fail('subject', '已归档作品不能更新个人记录。');
             $key = ['subject_id' => $subject, 'user_id' => $actor->id];
+            $existing = $this->db->table('acgn_records')->where($key)->lockForUpdate()->first();
+            (new FirstCompletion($this->db))->observe((int) $actor->id, $subject, $existing, $delete ? null : $fields['status'], (int) $actor->id);
             if ($delete) { $this->db->table('acgn_records')->where($key)->delete(); return; }
             if ($row->total_units !== null && $fields['progress'] > $row->total_units) Input::fail('progress', '进度不能超过作品总进度。');
             $now = gmdate('Y-m-d H:i:s');
-            $existing = $this->db->table('acgn_records')->where($key)->first();
             $activity = RecordActivity::changes($fields, $existing, false, $row->type);
             if ($existing) {
                 $this->db->table('acgn_records')->where($key)->update($fields + $activity + ['revision' => $existing->revision + 1, 'updated_at' => $now]);
@@ -150,11 +156,13 @@ final class Catalog
     public function link(int $subject, int $discussion, User $actor, bool $delete = false): array
     {
         $actor->assertCan('acgn.link');
-        $this->find($subject, $actor);
-        $this->discussions->findOrFail($discussion, $actor);
-        $key = ['subject_id' => $subject, 'discussion_id' => $discussion];
-        if ($delete) $this->db->table('acgn_discussions')->where($key)->delete();
-        else $this->db->table('acgn_discussions')->insertOrIgnore($key);
+        (new FactsMutation($this->db))->run('acgn-catalog', 0, [$subject], [$discussion], $delete ? 'link.delete' : 'link.save', function () use ($subject, $discussion, $actor, $delete): void {
+            $this->find($subject, $actor, false, true);
+            $this->discussions->findOrFail($discussion, $actor);
+            $key = ['subject_id' => $subject, 'discussion_id' => $discussion];
+            if ($delete) $this->db->table('acgn_discussions')->where($key)->delete();
+            else $this->db->table('acgn_discussions')->insertOrIgnore($key);
+        });
         return $this->linkedDiscussions($subject, $actor);
     }
 

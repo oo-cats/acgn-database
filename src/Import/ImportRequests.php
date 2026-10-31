@@ -7,6 +7,7 @@ use Flarum\User\User;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Local\AcgnDatabase\Input;
+use Local\AcgnDatabase\Facts\FactsMutation;
 
 final class ImportRequests
 {
@@ -131,7 +132,7 @@ final class ImportRequests
             if ($request !== null) $query->where('r.id', $request);
             foreach ($query->orderBy('a.id')->limit($limit)->get(['a.id', 'a.user_id']) as $candidate) {
                 if (microtime(true) >= $until) break;
-                $this->db->transaction(function () use ($candidate): void {
+                (new FactsMutation($this->db))->run('acgn-records', (int) $candidate->user_id, [], [], 'record.approval-import', function () use ($candidate): void {
                     $this->db->table('users')->where('id', $candidate->user_id)->lockForUpdate()->first();
                     $app = $this->db->table('acgn_import_applications')->where('id', $candidate->id)->lockForUpdate()->first();
                     if (!$app || $app->status !== 'pending') return;
@@ -150,7 +151,7 @@ final class ImportRequests
                         }
                     }
                     $this->db->table('acgn_import_applications')->where('id', $app->id)->update(['status' => $status, 'payload' => null, 'updated_at' => gmdate('Y-m-d H:i:s')]);
-                }, 3);
+                });
                 $processed++;
             }
             $notice = $this->db->table('acgn_import_requests')->where('notify_done', false)->where('status', 'pending');

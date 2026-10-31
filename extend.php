@@ -43,6 +43,7 @@ $api->get('/acgn/users/{user:\d+}/showcases/recent-watching', 'local-acgn-databa
 
 return [
     $api,
+    (new Extend\ServiceProvider())->register(\Local\AcgnDatabase\Facts\ServiceProvider::class),
     (new Extend\Frontend('forum'))->js(__DIR__.'/js/dist/forum.js')->css(__DIR__.'/resources/forum.less')
         ->route('/acgn', 'local-acgn-database.catalog')
         ->route('/acgn/subjects/{id:\d+}', 'local-acgn-database.subject')

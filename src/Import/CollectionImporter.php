@@ -8,6 +8,7 @@ use Flarum\User\User;
 use Illuminate\Database\ConnectionInterface;
 use Local\AcgnDatabase\Input;
 use Local\AcgnDatabase\RecordActivity;
+use Local\AcgnDatabase\Facts\FactsMutation;
 
 final class CollectionImporter
 {
@@ -86,7 +87,7 @@ final class CollectionImporter
         if (!is_array($ids) || !array_is_list($ids) || !$ids || count($ids) > 20) Input::fail('source_ids', '请选择一至二十条记录。');
         $ids = array_map(fn ($id) => Input::integer($id, 'source_ids', 1), $ids);
         if (count(array_unique($ids)) !== count($ids)) Input::fail('source_ids', '选择的记录不能重复。');
-        $result = $this->db->transaction(function () use ($actor, $token, $ids, $conflict): array {
+        $result = (new FactsMutation($this->db))->run('acgn-records', (int) $actor->id, [], [], 'record.import', function () use ($actor, $token, $ids, $conflict): array {
             $this->lockUser($actor);
             $draft = $this->db->table('acgn_collection_imports')->where('user_id', $actor->id)->where('token', $token)->lockForUpdate()->first();
             if (!$draft || !$draft->payload || !$draft->expires_at || $draft->expires_at <= gmdate('Y-m-d H:i:s')) Input::fail('token', '预览已过期、已使用或已替换，请重新预览。');
@@ -112,7 +113,7 @@ final class CollectionImporter
             }
             $this->clear($actor->id);
             return ['imported' => $imported, 'skipped' => $skipped, 'requested' => $requested];
-        }, 3);
+        });
         if ($result['requested'] && $this->requests) $this->requests->bestEffort();
         return $result;
     }

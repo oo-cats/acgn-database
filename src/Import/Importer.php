@@ -7,6 +7,7 @@ namespace Local\AcgnDatabase\Import;
 use Flarum\User\User;
 use Illuminate\Database\ConnectionInterface;
 use Local\AcgnDatabase\{Catalog, Input};
+use Local\AcgnDatabase\Facts\FactsMutation;
 
 final class Importer
 {
@@ -48,7 +49,7 @@ final class Importer
         $actor->assertCan('acgn.create');
         $token = Input::text($data, 'token', 48);
         if (!preg_match('/^[a-f0-9]{48}$/D', $token)) Input::fail('token', '预览凭据无效，请重新预览。');
-        return $this->db->transaction(function () use ($token, $actor, $sourceId, $createOnly): int {
+        return (new FactsMutation($this->db))->run('acgn-catalog', 0, [], [], 'subject.import', function () use ($token, $actor, $sourceId, $createOnly): int {
             $draft = $this->db->table('acgn_imports')->where('token', $token)->where('user_id', $actor->id)->lockForUpdate()->first();
             if (!$draft || $draft->expires_at <= gmdate('Y-m-d H:i:s')) Input::fail('token', '预览已过期或已使用，请重新预览。');
             $payload = json_decode($draft->payload, true, 64, JSON_THROW_ON_ERROR);
@@ -82,7 +83,7 @@ final class Importer
             foreach ($payload['credits'] as $credit) $this->db->table('acgn_credits')->insertOrIgnore(['subject_id' => $id, 'person_id' => $personIds[$credit['key']], 'role' => $credit['role']]);
             $this->db->table('acgn_imports')->where('token', $token)->delete();
             return $id;
-        }, 3);
+        });
     }
 
     private function merge(string $table, array $key, array $fields, bool $update): array

@@ -5,8 +5,9 @@ namespace Local\AcgnDatabase\Import;
 
 use Illuminate\Database\ConnectionInterface;
 use Local\AcgnDatabase\RecordActivity;
+use Local\AcgnDatabase\Facts\FirstCompletion;
 
-/** Caller locks the user first; the subject lock serializes all record writers. */
+/** Internal writer: caller starts FactsMutation before locking the user. */
 final class CollectionRecord
 {
     public function __construct(private ConnectionInterface $db) {}
@@ -17,10 +18,11 @@ final class CollectionRecord
         if (!$subject || $subject->archived || $subject->type !== 'anime' || (isset($item['subject_id']) && (int) $subject->id !== (int) $item['subject_id'])
             || ($subject->total_units !== null && $item['record']['progress'] > $subject->total_units)) return 'unavailable';
         $key = ['subject_id' => $subject->id, 'user_id' => $user];
-        $existing = $this->db->table('acgn_records')->where($key)->first();
+        $existing = $this->db->table('acgn_records')->where($key)->lockForUpdate()->first();
         if ($existing && $conflict === 'skip') return 'skipped';
         $hash = $existing ? hash('sha256', json_encode((array) $existing, JSON_THROW_ON_ERROR)) : null;
         if ($hash !== $item['record_hash']) return 'conflict';
+        (new FirstCompletion($this->db))->observe($user, (int) $subject->id, $existing, $item['record']['status'], null);
         $now = gmdate('Y-m-d H:i:s');
         $fields = $item['record']; $fields['favorite'] = $existing ? (bool) $existing->favorite : false;
         $fields += RecordActivity::changes($fields, $existing, true);
