@@ -7,7 +7,9 @@ app.initializers.add('local-acgn-database', () => {
     .registerPermission({ icon: 'fas fa-book-open', label: trans('view'), permission: 'acgn.view', allowGuest: true }, 'view')
     .registerPermission({ icon: 'fas fa-star', label: trans('collect'), permission: 'acgn.collect' }, 'reply')
     .registerPermission({ icon: 'fas fa-file-import', label: trans('import_collection'), permission: 'acgn.import_collection' }, 'reply')
-    .registerPermission({ icon: 'fas fa-pen', label: trans('manage'), permission: 'acgn.manage' }, 'moderate')
-    .registerPermission({ icon: 'fas fa-cloud-download-alt', label: trans('import'), permission: 'acgn.import' }, 'moderate')
+    .registerPermission({ icon: 'fas fa-plus', label: trans('create'), permission: 'acgn.create' }, 'moderate')
+    .registerPermission({ icon: 'fas fa-pen', label: trans('update'), permission: 'acgn.update' }, 'moderate')
+    .registerPermission({ icon: 'fas fa-archive', label: trans('delete'), permission: 'acgn.delete' }, 'moderate')
+    .registerPermission({ icon: 'fas fa-check', label: trans('approve'), permission: 'acgn.approve' }, 'moderate')
     .registerPermission({ icon: 'fas fa-link', label: trans('link'), permission: 'acgn.link' }, 'moderate');
 });

@@ -53,8 +53,6 @@ class Bangumi
             'cover_url' => $this->image($subject['images'] ?? null),
             'release_date' => $date, 'total_units' => $units, 'tags' => $tags,
         ]);
-        $score = $subject['rating']['score'] ?? null;
-        $fields['source_score'] = is_numeric($score) && $score > 0 && $score <= 10 ? round((float) $score, 2) : null;
         $people = [];
         $credits = [];
         $truncated = false;

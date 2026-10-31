@@ -100,7 +100,7 @@ local-acgn-database:
     confirm_import: 确认导入
     import_counts: "包含 {people} 位人物／角色，{credits} 条作品关系。"
     truncated: 关联资料达到单次上限，仅导入预览中列出的关系，其余可手动补充。
-    import_preserve: 来源 ID 自动去重；重复导入只补充空字段及关系，保留人工资料；来源评分会更新。预览十分钟内有效，新预览会替换旧预览。
+    import_preserve: 只导入作品和人物资料，不导入 Bangumi 综合评分。来源 ID 自动去重；更新既有资料需修改权限，保留人工填写内容。预览十分钟内有效。
     personal_import: 导入我的 Bangumi 观影记录
     personal_import_hint: 核验本人 Bangumi 账号，逐页预览动画收藏的状态、评分、集数进度和短评，勾选后保存为本站个人记录。
     personal_access_token: Bangumi Access Token
@@ -108,10 +108,10 @@ local-acgn-database:
     personal_read: 读取并预览第一页
     personal_continue: 继续预览下一页
     personal_identity: "已核验账号：{username}；动画收藏共 {total} 条，当前从第 {offset} 条之后读取。"
-    personal_mapping_hint: 每页最多 20 条。仅匹配站内已有的 Bangumi 动画条目；缺少的公共条目需管理员先导入。保留特别收藏标记，导入或替换后记录设为私有。
+    personal_mapping_hint: 每页最多 20 条。缺少的动画条目可勾选申请，审核建库后自动导入所选个人记录。保留特别收藏标记，导入或替换后记录设为私有。
     personal_empty: 此页没有动画收藏。
     personal_local_entry: 查看站内条目
-    personal_unavailable_missing: 站内尚无对应条目，请管理员先导入。
+    personal_unavailable_missing: 站内尚无条目；勾选后提交审批，批准建库后自动导入个人记录。
     personal_unavailable_archived: 站内条目已归档，暂时无法导入记录。
     personal_unavailable_type: 站内条目类型不是动画，请管理员核对。
     personal_unavailable_progress: 来源进度超过站内总集数，请管理员核对条目进度。
@@ -120,18 +120,45 @@ local-acgn-database:
     personal_conflict: 已有站内记录的处理
     personal_skip: 保留已有记录，跳过选中的重复项
     personal_replace: 用预览值替换选中的已有记录
-    personal_consent: 我确认导入或替换后的记录设为私有；短评始终仅本人可见，导入评分将参与本站公开的匿名评分统计。
+    personal_consent: 我确认导入或替换后的记录设为私有；短评仅本人可见，评分参与本站匿名统计。缺失作品可保存所选个人数据等待审批，批准建库后自动导入；申请三十天后过期，由后台清除待处理数据，不保存 Token。
     personal_preview_expiry: 预览十分钟有效；确认后立即失效。两次来源读取至少间隔十秒。来源更新时间不代表实际观看日期。
     personal_confirm: "确认导入选中的 {count} 条"
-    personal_import_result: "已导入 {imported} 条，保留并跳过 {skipped} 条已有记录。"
+    personal_import_result: "已导入 {imported} 条，保留并跳过 {skipped} 条，已提交 {requested} 项条目申请。"
     personal_import_error: 无法完成导入，请查看错误提示。检查管理员是否已配置 Bangumi 来源身份、Token 是否有效，或重新预览后重试。
     personal_imported_at: "由 Bangumi 导入，导入时间（UTC）：{date}。此时间不是观看日期。"
+    requests: 条目导入申请
+    request_review_hint: 仅展示公共条目信息。预览后批准将建立或复用作品，并自动导入申请人的个人记录；审核者看不到其评分和短评。
+    request_mine_hint: 申请三十天后过期，后台处理时清除待导入数据，可在处理前撤回。批准后自动导入，保留等待期间新写入的记录。被拒绝的作品七天后可重新申请。
+    request_mine: 我的申请
+    request_review: 审批条目
+    request_status: 申请状态
+    request_refresh: 刷新
+    request_approve: 同意导入并处理个人记录
+    request_reject: 拒绝
+    request_reject_confirm: 确定拒绝此作品的导入申请？
+    request_cancel: 撤回我的申请
+    request_first: 返回第一页
+    request_empty: 没有此类申请。
+    request_error: 无法处理申请，请查看错误提示并刷新后重试。
+    request_auto_import: 同意后仅新增或复用公共条目，不修改已有公共资料；申请人的个人记录自动导入，冲突项保留原记录并反馈结果。
+    request_pending: 等待审批或处理
+    request_approved: 公共条目已批准
+    request_rejected: 已拒绝
+    request_imported: 个人记录已导入
+    request_skipped: 已保留现有个人记录
+    request_conflict: 个人记录已变化，未覆盖；请重新预览导入
+    request_blocked: 当前导入权限不足，未写入个人记录
+    request_unavailable: 条目已归档、类型或进度不匹配，未导入
+    request_expired: 申请已过期，待导入数据已清除
+    request_cancelled: 已撤回
   admin:
     user_agent: Bangumi User-Agent
     user_agent_help: "按 Bangumi 官方要求填写开发者 ID／应用名称／版本，例如 your-bgm-id/acgn-database/0.1.0；请替换示例 ID，开源项目可附项目地址。未配置时不能导入。"
     view: 查看 acgn-database
     collect: 保存个人评分与收藏
-    manage: 创建、编辑、归档作品与人物
-    import: 从 Bangumi 导入作品与人物
+    create: 新增作品与人物（手动及 Bangumi 导入）
+    update: 修改全部公共作品、人物及关系
+    delete: 归档或恢复作品与人物（保留个人记录）
+    approve: 审批条目导入申请（同时需要新增及查看权限）
     import_collection: 导入本人 Bangumi 观影记录
     link: 管理作品与讨论的关联

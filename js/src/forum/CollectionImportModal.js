@@ -23,7 +23,7 @@ export default class CollectionImportModal extends Modal {
     try {
       this.preview = await api('/collection-import/preview', 'POST', { access_token: this.accessToken.trim(), offset });
       if (this.closed) { await this.discard(); return; }
-      this.selected = new Set(this.preview.items.filter(item => item.reason === null && !item.existing).map(item => item.source_id));
+      this.selected = new Set(this.preview.items.filter(item => (item.reason === null || item.reason === 'missing') && !item.existing).map(item => item.source_id));
     } catch (_) { this.preview = null; this.error = true; }
     finally { this.busy = false; m.redraw(); }
   }
@@ -59,7 +59,7 @@ export default class CollectionImportModal extends Modal {
         <p className="helpText">{t('personal_mapping_hint')}</p>
         {!this.preview.items.length && <p>{t('personal_empty')}</p>}
         {this.preview.items.map(item => <section className="Acgn-collection-item" key={item.source_id}>
-          <label className="Acgn-collection-choice"><input type="checkbox" checked={this.selected.has(item.source_id)} disabled={this.busy || item.reason !== null}
+          <label className="Acgn-collection-choice"><input type="checkbox" checked={this.selected.has(item.source_id)} disabled={this.busy || (item.reason !== null && item.reason !== 'missing')}
             onchange={event => { if (event.target.checked) this.selected.add(item.source_id); else this.selected.delete(item.source_id); }} /> <strong>{item.title}</strong></label>
           {item.subject_id && item.reason === null && <a href={url({ id: item.subject_id })} target="_blank" rel="noopener noreferrer">{t('personal_local_entry')}</a>}
           {item.reason && <p className="helpText">{t('personal_unavailable_' + item.reason)}</p>}

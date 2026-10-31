@@ -6,6 +6,8 @@ use Local\AcgnDatabase\Api\Controller;
 use Local\AcgnDatabase\Api\CollectionImportController;
 use Local\AcgnDatabase\Api\ShowcaseController;
 use Local\AcgnDatabase\ForumAttributes;
+use Local\AcgnDatabase\Api\ImportRequestController;
+use Local\AcgnDatabase\Import\{ApprovalWorkCommand, ApprovalSchedule, ImportRequestBlueprint};
 
 $api = new Extend\Routes('api');
 foreach (['subjects', 'people'] as $resource) {
@@ -28,6 +30,10 @@ $api->put('/acgn/subjects/{id:\d+}/record', 'local-acgn-database.record.save', C
 $api->post('/acgn/collection-import/preview', 'local-acgn-database.collection.preview', CollectionImportController::class)
     ->post('/acgn/collection-import/confirm', 'local-acgn-database.collection.confirm', CollectionImportController::class)
     ->delete('/acgn/collection-import', 'local-acgn-database.collection.discard', CollectionImportController::class);
+$api->get('/acgn/import-requests', 'local-acgn-database.requests.index', ImportRequestController::class)
+    ->post('/acgn/import-requests/{id:\d+}/preview', 'local-acgn-database.requests.preview', ImportRequestController::class)
+    ->post('/acgn/import-requests/{id:\d+}/decision', 'local-acgn-database.requests.decide', ImportRequestController::class)
+    ->post('/acgn/import-applications/{id:\d+}/cancel', 'local-acgn-database.applications.cancel', ImportRequestController::class);
 $api->get('/acgn/users/{user:\d+}/showcases/recent-watching', 'local-acgn-database.showcase.watching', ShowcaseController::class)
     ->get('/acgn/users/{user:\d+}/showcases/recent-ratings', 'local-acgn-database.showcase.ratings', ShowcaseController::class)
     ->get('/acgn/showcases/settings', 'local-acgn-database.showcase.settings', ShowcaseController::class)
@@ -41,7 +47,10 @@ return [
         ->route('/acgn', 'local-acgn-database.catalog')
         ->route('/acgn/subjects/{id:\d+}', 'local-acgn-database.subject')
         ->route('/acgn/people', 'local-acgn-database.people')
-        ->route('/acgn/people/{id:\d+}', 'local-acgn-database.person'),
+        ->route('/acgn/people/{id:\d+}', 'local-acgn-database.person')
+        ->route('/acgn/import-requests', 'local-acgn-database.requests'),
+    (new Extend\Console())->command(ApprovalWorkCommand::class)->schedule(ApprovalWorkCommand::class, ApprovalSchedule::class),
+    (new Extend\Notification())->type(ImportRequestBlueprint::class, \Local\AcgnDatabase\Api\RequestSubjectSerializer::class, ['alert']),
     (new Extend\Frontend('admin'))->js(__DIR__.'/js/dist/admin.js'),
     (new Extend\ApiSerializer(ForumSerializer::class))->attributes(ForumAttributes::class),
     new Extend\Locales(__DIR__.'/resources/locale'),

@@ -33,8 +33,9 @@ export default class CatalogPage extends Page {
       <header className="Acgn-header"><div><p className="Acgn-eyebrow">acgn-database</p><h1>{t(this.people ? 'people' : 'catalog')}</h1></div>
         <div className="Acgn-actions">
           {can('PersonalImport') && !this.people && <Button className="Button" icon="fas fa-file-import" onclick={() => app.modal.show(CollectionImportModal, { onImported: () => { this.mine = true; this.load(); } })}>{t('personal_import')}</Button>}
-          {can('Import') && !this.people && <Button className="Button" icon="fas fa-cloud-download-alt" onclick={() => app.modal.show(ImportModal)}>{t('import')}</Button>}
-          {can('Manage') && <Button className="Button Button--primary" icon="fas fa-plus" onclick={() => app.modal.show(EntityModal, { people: this.people, onSave: (item) => m.route.set(url(item, this.people)) })}>{t(this.people ? 'new_person' : 'new_subject')}</Button>}
+          {can('Requests') && <Link className="Button" href={app.route('acgn.requests')}>{t('requests')}</Link>}
+          {can('Create') && !this.people && <Button className="Button" icon="fas fa-cloud-download-alt" onclick={() => app.modal.show(ImportModal)}>{t('import')}</Button>}
+          {can('Create') && <Button className="Button Button--primary" icon="fas fa-plus" onclick={() => app.modal.show(EntityModal, { people: this.people, onSave: (item) => m.route.set(url(item, this.people)) })}>{t(this.people ? 'new_person' : 'new_subject')}</Button>}
         </div>
       </header>
       <nav className="Acgn-tabs"><Link href={app.route('acgn.catalog')}>{t('catalog')}</Link><Link href={app.route('acgn.people')}>{t('people')}</Link></nav>
@@ -44,7 +45,7 @@ export default class CatalogPage extends Page {
           <option value="">{t('all')}</option>{(this.people ? ['person', 'character'] : TYPES).map((v) => <option value={v}>{t(v)}</option>)}
         </select>
         {!this.people && app.session.user && <label className="Acgn-check"><input type="checkbox" checked={this.mine} disabled={this.busy} onchange={(e) => { this.mine = e.target.checked; this.load(); }} /> {t('my_collection')}</label>}
-        {can('Manage') && <label className="Acgn-check"><input type="checkbox" checked={this.archived} disabled={this.busy} onchange={(e) => { this.archived = e.target.checked; this.load(); }} /> {t('archived_only')}</label>}
+        {can('Delete') && <label className="Acgn-check"><input type="checkbox" checked={this.archived} disabled={this.busy} onchange={(e) => { this.archived = e.target.checked; this.load(); }} /> {t('archived_only')}</label>}
         <Button className="Button" type="submit" disabled={this.busy} icon="fas fa-search">{t('search')}</Button>
       </form>
       {this.busy ? <LoadingIndicator /> : this.failed ? <div className="Acgn-empty"><p role="alert">{t('load_error')}</p><Button className="Button" onclick={() => this.load()}>{t('retry')}</Button></div>

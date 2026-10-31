@@ -12,8 +12,11 @@ final class ForumAttributes
         $view = $actor->can('viewForum') && $actor->can('acgn.view');
         return [
             'acgnView' => $view,
-            'acgnManage' => $view && $actor->can('acgn.manage'),
-            'acgnImport' => $view && !$actor->isGuest() && $actor->can('acgn.import'),
+            'acgnRequests' => $view && !$actor->isGuest(),
+            'acgnCreate' => $view && !$actor->isGuest() && $actor->can('acgn.create'),
+            'acgnUpdate' => $view && !$actor->isGuest() && $actor->can('acgn.update'),
+            'acgnDelete' => $view && !$actor->isGuest() && $actor->can('acgn.delete'),
+            'acgnApprove' => $view && !$actor->isGuest() && $actor->can('acgn.approve') && $actor->can('acgn.create'),
             'acgnCollect' => $view && !$actor->isGuest() && $actor->can('acgn.collect'),
             'acgnPersonalImport' => $view && !$actor->isGuest() && $actor->can('acgn.collect') && $actor->can('acgn.import_collection'),
             'acgnLink' => $view && $actor->can('acgn.link'),

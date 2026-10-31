@@ -54,24 +54,23 @@ export default class DetailPage extends Page {
         {!!item.aliases.length && <p>{t('aliases')}: {listText(item.aliases)}</p>}
         {!this.people && <><p>{item.release_date} {item.total_units && <span> · {t('units', { count: item.total_units })}</span>}</p>
           {this.ratingsView()}
-          {item.source_score !== null && <p>{t('source_rating')}: {item.source_score}</p>}
           <p className="Acgn-tags">{item.tags.map((tag) => <span>{tag}</span>)}</p></>}
         {item.source === 'bangumi' && <a href={sourceUrl(item, this.people)} target="_blank" rel="noopener noreferrer">{t('view_source')} ↗</a>}
-        {can('Manage') && <div className="Acgn-actions"><Button className="Button" disabled={this.busy} onclick={() => app.modal.show(EntityModal, { people: this.people, entity: item, onSave: (updated) => this.apply(updated) })}>{t('edit')}</Button>
-          <Button className="Button" loading={this.busy} disabled={this.busy} onclick={() => {
+        {(can('Update') || can('Delete')) && <div className="Acgn-actions">{can('Update') && <Button className="Button" disabled={this.busy} onclick={() => app.modal.show(EntityModal, { people: this.people, entity: item, onSave: (updated) => this.apply(updated) })}>{t('edit')}</Button>}
+          {can('Delete') && <Button className="Button" loading={this.busy} disabled={this.busy} onclick={() => {
             if (window.confirm(app.translator.trans(`local-acgn-database.forum.${item.archived ? 'restore_confirm' : 'archive_confirm'}`))) {
               this.run(`/${this.people ? 'people' : 'subjects'}/${item.id}/archive`, 'PUT', { revision: item.revision, archived: !item.archived });
             }
-          }}>{t(item.archived ? 'restore' : 'archive')}</Button></div>}
+          }}>{t(item.archived ? 'restore' : 'archive')}</Button>}</div>}
       </div></header>
       <div className="Acgn-detail-grid"><div className="Acgn-main">
         <section><h2>{t('summary')}</h2><p className="Acgn-summary">{item.summary || t('no_summary')}</p></section>
         <section><div className="Acgn-section-title"><h2>{t(this.people ? 'works' : 'credits')}</h2>
-          {!this.people && can('Manage') && <Button className="Button" onclick={() => app.modal.show(CreditModal, { subject: item, onSave: (updated) => this.apply(updated) })}>{t('add_credit')}</Button>}
+          {!this.people && can('Update') && <Button className="Button" onclick={() => app.modal.show(CreditModal, { subject: item, onSave: (updated) => this.apply(updated) })}>{t('add_credit')}</Button>}
         </div>
           {this.people ? <ul className="Acgn-relations">{item.works.map((work) => <li key={work.credit_id}><Link href={url(work)}>{work.title}</Link><span>{work.role}</span></li>)}</ul>
             : <ul className="Acgn-relations">{item.credits.map((credit) => <li key={credit.credit_id}><Link href={url(credit, true)}>{credit.name}</Link><span>{credit.role}</span>
-              {can('Manage') && <Button className="Button Button--text" disabled={this.busy} onclick={() => {
+              {can('Update') && <Button className="Button Button--text" disabled={this.busy} onclick={() => {
                 if (window.confirm(app.translator.trans('local-acgn-database.forum.unlink_credit_confirm'))) this.run(`/subjects/${item.id}/credits`, 'DELETE', { person_id: credit.id, role: credit.role });
               }}>{t('unlink')}</Button>}</li>)}</ul>}
           {!(this.people ? item.works : item.credits).length && <p className="helpText">{t('no_relations')}</p>}

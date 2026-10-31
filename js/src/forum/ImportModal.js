@@ -18,7 +18,6 @@ export default class ImportModal extends Modal {
       {this.preview && <section className="Acgn-preview" aria-live="polite">
         {cover(this.preview.subject)}<h3>{this.preview.subject.title}</h3>
         <p>{this.preview.subject.original_title}</p><p>{t('import_counts', { people: this.preview.people.length, credits: this.preview.credits.length })}</p>
-        <p>{t('source_rating')}: {this.preview.subject.source_score ?? '—'}</p>
         <p className="Acgn-summary">{this.preview.subject.summary}</p>
         <details><summary>{t('credits')}</summary><ul>{this.preview.credits.map((credit) => {
           const person = this.preview.people.find((p) => `${p.kind}:${p.source_id}` === credit.key);

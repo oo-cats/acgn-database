@@ -17,10 +17,11 @@ final class Catalog
 
     public function listing(array $params, User $actor, bool $people = false): array
     {
+        $actor->assertCan('viewForum'); $actor->assertCan('acgn.view');
         $table = $people ? 'acgn_people' : 'acgn_subjects';
         $query = $this->db->table($table);
         $archived = ($params['archived'] ?? '') === '1';
-        if ($archived) $actor->assertCan('acgn.manage');
+        if ($archived) $actor->assertCan('acgn.delete');
         $query->where('archived', $archived);
         $q = Input::text($params, 'q', 100);
         if ($q !== '') {
@@ -44,8 +45,9 @@ final class Catalog
 
     public function find(int $id, User $actor, bool $people = false, bool $lock = false): object
     {
+        $actor->assertCan('viewForum'); $actor->assertCan('acgn.view');
         $query = $this->db->table($people ? 'acgn_people' : 'acgn_subjects')->where('id', $id);
-        if (!$actor->can('acgn.manage')) $query->where('archived', false);
+        if (!$actor->can('acgn.delete')) $query->where('archived', false);
         if ($lock) $query->lockForUpdate();
         $row = $query->first();
         if (!$row) throw new ModelNotFoundException();
@@ -72,7 +74,8 @@ final class Catalog
 
     public function save(array $data, User $actor, ?int $id = null, bool $people = false): array
     {
-        $actor->assertCan('acgn.manage');
+        $actor->assertRegistered();
+        $actor->assertCan($id === null ? 'acgn.create' : 'acgn.update');
         $fields = Input::entity($data, $people);
         $table = $people ? 'acgn_people' : 'acgn_subjects';
         foreach (['aliases', 'tags'] as $key) if (isset($fields[$key])) $fields[$key] = json_encode($fields[$key], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
@@ -94,7 +97,8 @@ final class Catalog
 
     public function archive(int $id, array $data, User $actor, bool $people = false): array
     {
-        $actor->assertCan('acgn.manage');
+        $actor->assertRegistered();
+        $actor->assertCan('acgn.delete');
         $archived = Input::boolean($data['archived'] ?? null, 'archived');
         $this->db->transaction(function () use ($id, $data, $actor, $people, $archived): void {
             $row = $this->find($id, $actor, $people, true);
@@ -129,7 +133,7 @@ final class Catalog
 
     public function credit(int $subject, array $data, User $actor, bool $delete = false): array
     {
-        $actor->assertCan('acgn.manage');
+        $actor->assertCan('acgn.update');
         $person = Input::integer($data['person_id'] ?? null, 'person_id', 1);
         $role = Input::text($data, 'role', 100);
         if ($role === '') Input::fail('role', '职责／角色类型不能为空。');
@@ -178,6 +182,7 @@ final class Catalog
 
     public function decorate(array $rows, User $actor, bool $people = false): array
     {
+        $actor->assertCan('viewForum'); $actor->assertCan('acgn.view');
         $ids = array_values(array_unique(array_map(fn ($row) => $row->id, $rows)));
         $stats = $records = [];
         if (!$people && $ids) {
@@ -198,7 +203,7 @@ final class Catalog
             if (!$people) {
                 $value['tags'] = json_decode($row->tags, true) ?? [];
                 $value['total_units'] = $row->total_units === null ? null : (int) $row->total_units;
-                $value['source_score'] = $row->source_score === null ? null : (float) $row->source_score;
+                unset($value['source_score']);
                 $distribution = $stats[$row->id] ?? array_fill(0, 10, 0);
                 $count = array_sum($distribution);
                 $sum = 0;

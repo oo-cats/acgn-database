@@ -11,7 +11,7 @@ use Local\AcgnDatabase\RecordActivity;
 
 final class CollectionImporter
 {
-    public function __construct(private ConnectionInterface $db, private Bangumi $bangumi) {}
+    public function __construct(private ConnectionInterface $db, private Bangumi $bangumi, private ?ImportRequests $requests = null) {}
 
     public function preview(array $data, User $actor): array
     {
@@ -86,7 +86,7 @@ final class CollectionImporter
         if (!is_array($ids) || !array_is_list($ids) || !$ids || count($ids) > 20) Input::fail('source_ids', '请选择一至二十条记录。');
         $ids = array_map(fn ($id) => Input::integer($id, 'source_ids', 1), $ids);
         if (count(array_unique($ids)) !== count($ids)) Input::fail('source_ids', '选择的记录不能重复。');
-        return $this->db->transaction(function () use ($actor, $token, $ids, $conflict): array {
+        $result = $this->db->transaction(function () use ($actor, $token, $ids, $conflict): array {
             $this->lockUser($actor);
             $draft = $this->db->table('acgn_collection_imports')->where('user_id', $actor->id)->where('token', $token)->lockForUpdate()->first();
             if (!$draft || !$draft->payload || !$draft->expires_at || $draft->expires_at <= gmdate('Y-m-d H:i:s')) Input::fail('token', '预览已过期、已使用或已替换，请重新预览。');
@@ -94,35 +94,27 @@ final class CollectionImporter
             $bySource = array_column($payload['items'], null, 'source_id');
             $selected = [];
             foreach ($ids as $id) {
-                if (!isset($bySource[$id]) || $bySource[$id]['reason'] !== null) Input::fail('source_ids', '选择包含无法导入或未预览的条目。');
+                if (!isset($bySource[$id]) || !in_array($bySource[$id]['reason'], [null, 'missing'], true)) Input::fail('source_ids', '选择包含无法导入或未预览的条目。');
                 $selected[] = $bySource[$id];
             }
-            usort($selected, fn ($a, $b) => $a['subject_id'] <=> $b['subject_id']);
-            $imported = $skipped = 0;
+            usort($selected, fn ($a, $b) => $a['source_id'] <=> $b['source_id']);
+            $imported = $skipped = $requested = 0;
             foreach ($selected as $item) {
-                $subject = $this->db->table('acgn_subjects')->where('id', $item['subject_id'])->lockForUpdate()->first();
-                if (!$subject || $subject->archived || $subject->source !== 'bangumi' || (int) $subject->source_id !== $item['source_id'] || $subject->type !== 'anime'
-                    || ($subject->total_units !== null && $item['record']['progress'] > $subject->total_units)) Input::fail('subject', '站内条目已变化，请重新预览。');
-                $key = ['subject_id' => $subject->id, 'user_id' => $actor->id];
-                $existing = $this->db->table('acgn_records')->where($key)->first();
-                if ($existing && $conflict === 'skip') { $skipped++; continue; }
-                $recordHash = $existing ? hash('sha256', json_encode((array) $existing, JSON_THROW_ON_ERROR)) : null;
-                if ($recordHash !== $item['record_hash']) Input::fail('record', '个人记录在预览后已修改，请重新预览。');
-                $now = gmdate('Y-m-d H:i:s');
-                $fields = $item['record'];
-                $fields['favorite'] = $existing ? (bool) $existing->favorite : false;
-                $fields += RecordActivity::changes($fields, $existing, true);
-                // Source history must not inherit a prior public sharing grant.
-                $fields += ['share_visibility' => 'self', 'share_score' => false, 'share_progress' => false];
-                $fields += ['revision' => $existing ? $existing->revision + 1 : 0, 'updated_at' => $now, 'imported_from' => 'bangumi',
-                    'imported_account' => $payload['account']['id'], 'source_updated_at' => $item['source_updated_at'], 'imported_at' => $now];
-                if ($existing) $this->db->table('acgn_records')->where($key)->update($fields);
-                else $this->db->table('acgn_records')->insert($key + $fields + ['created_at' => $now]);
-                $imported++;
+                if ($item['reason'] === 'missing' && !$this->db->table('acgn_subjects')->where(['source' => 'bangumi', 'source_id' => $item['source_id']])->exists()) {
+                    if (!$this->requests) Input::fail('source_ids', '缺失条目申请服务不可用。');
+                    $this->requests->submit($item, (int) $payload['account']['id'], $actor, $conflict);
+                    $requested++; continue;
+                }
+                $status = (new CollectionRecord($this->db))->apply($item, (int) $actor->id, (int) $payload['account']['id'], $conflict);
+                if ($status === 'unavailable') Input::fail('subject', '站内条目已变化，请重新预览。');
+                if ($status === 'conflict') Input::fail('record', '个人记录在预览后已修改，请重新预览。');
+                if ($status === 'skipped') $skipped++; else $imported++;
             }
             $this->clear($actor->id);
-            return ['imported' => $imported, 'skipped' => $skipped];
+            return ['imported' => $imported, 'skipped' => $skipped, 'requested' => $requested];
         }, 3);
+        if ($result['requested'] && $this->requests) $this->requests->bestEffort();
+        return $result;
     }
 
     public function discard(array $data, User $actor): array

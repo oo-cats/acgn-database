@@ -100,7 +100,7 @@ local-acgn-database:
     confirm_import: Confirm import
     import_counts: "Includes {people} people / characters and {credits} credits."
     truncated: The relationship limit was reached. Only the previewed relationships will be imported; add other entries manually.
-    import_preserve: Source IDs prevent duplicates. Reimports fill empty fields and add credits while retaining manual content. Source ratings are refreshed. Previews expire after ten minutes and a new preview replaces your previous one.
+    import_preserve: Only work and people data is imported, never Bangumi aggregate ratings. Source IDs prevent duplicates. Updating existing data requires update permission and preserves manual content. Previews expire after ten minutes.
     personal_import: Import my Bangumi viewing records
     personal_import_hint: Verify your Bangumi account, preview anime collection status, ratings, episode progress and short comments, then select records to save locally.
     personal_access_token: Bangumi Access Token
@@ -108,10 +108,10 @@ local-acgn-database:
     personal_read: Read and preview first page
     personal_continue: Preview next page
     personal_identity: "Verified account: {username}; {total} anime records total, reading after offset {offset}."
-    personal_mapping_hint: Up to 20 records per page. Only existing local Bangumi anime entries can be matched; ask an administrator to import missing public entries first. Favorite flags are preserved; imported or replaced records become private.
+    personal_mapping_hint: Up to 20 records per page. Select missing anime to request approval. Your selected personal record is imported automatically after approval creates the entry. Favorite flags are preserved; imported records become private.
     personal_empty: No anime records on this page.
     personal_local_entry: View local entry
-    personal_unavailable_missing: No matching local entry. Ask an administrator to import it first.
+    personal_unavailable_missing: No local entry. Select to request approval and automatically import your record after the entry is created.
     personal_unavailable_archived: The local entry is archived and cannot receive imported records.
     personal_unavailable_type: The local entry is not anime. Ask an administrator to check it.
     personal_unavailable_progress: Source progress exceeds the local episode total. Ask an administrator to check it.
@@ -120,18 +120,45 @@ local-acgn-database:
     personal_conflict: Handling existing local records
     personal_skip: Keep existing records and skip selected duplicates
     personal_replace: Replace selected existing records with preview values
-    personal_consent: I understand that imported or replaced records become private. Short comments always stay private; imported ratings contribute to public anonymous rating statistics.
+    personal_consent: Imported records become private; comments stay private and scores contribute to local anonymous statistics. Selected data for missing works may be stored for approval and imported automatically afterwards. Requests expire after thirty days; background processing clears expired snapshots. Tokens are never stored.
     personal_preview_expiry: Previews expire after ten minutes and are consumed on confirmation. Wait ten seconds between source reads. Source update timestamps are not actual viewing dates.
     personal_confirm: "Import {count} selected records"
-    personal_import_result: "Imported {imported} records; kept and skipped {skipped} existing records."
+    personal_import_result: "Imported {imported}; kept and skipped {skipped}; submitted {requested} entry requests."
     personal_import_error: Import failed. Check the error message, administrator source configuration and Access Token, or load a new preview and try again.
     personal_imported_at: "Imported from Bangumi at {date} (UTC). This is not the viewing date."
+    requests: Entry import requests
+    request_review_hint: Only public entry information is shown. Approval creates or reuses the work and imports the applicants' private records automatically. Reviewers cannot see their scores or comments.
+    request_mine_hint: Requests expire after thirty days and background processing clears expired snapshots. You can withdraw before processing. Approval imports records automatically while preserving newer local records. Rejected works can be requested again after seven days.
+    request_mine: My requests
+    request_review: Review entries
+    request_status: Request status
+    request_refresh: Refresh
+    request_approve: Approve entry and process personal records
+    request_reject: Reject
+    request_reject_confirm: Reject the import request for this work?
+    request_cancel: Withdraw my request
+    request_first: First page
+    request_empty: No requests in this category.
+    request_error: Unable to process the request. Check the error message, refresh and try again.
+    request_auto_import: Approval only creates or reuses public entries without modifying existing public data. Personal records are imported automatically; conflicts preserve the current record and report the outcome.
+    request_pending: Waiting for review or processing
+    request_approved: Public entry approved
+    request_rejected: Rejected
+    request_imported: Personal record imported
+    request_skipped: Existing personal record kept
+    request_conflict: Personal record changed and was preserved; preview the import again
+    request_blocked: Current import permissions are insufficient; record not written
+    request_unavailable: Archived entry, incompatible type or progress; not imported
+    request_expired: Request expired and pending personal data was cleared
+    request_cancelled: Withdrawn
   admin:
     user_agent: Bangumi User-Agent
     user_agent_help: "Use your developer ID / application / version, for example your-bgm-id/acgn-database/0.1.0. Replace the example ID and append the project URL if open source. Required for imports."
     view: View acgn-database
     collect: Save personal ratings and collections
-    manage: Create, edit and archive works and people
-    import: Import works and people from Bangumi
+    create: Create works and people (manual and Bangumi import)
+    update: Update all public works, people and relationships
+    delete: Archive or restore works and people (preserve personal records)
+    approve: Review entry import requests (also requires create and view)
     import_collection: Import own Bangumi viewing records
     link: Manage links between works and discussions

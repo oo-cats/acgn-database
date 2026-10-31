@@ -6,6 +6,9 @@ import LinkButton from 'flarum/common/components/LinkButton';
 import CatalogPage from './CatalogPage';
 import DetailPage from './DetailPage';
 import DiscussionSubjects from './DiscussionSubjects';
+import ImportRequestsPage from './ImportRequestsPage';
+import ImportRequestNotification from './ImportRequestNotification';
+import NotificationGrid from 'flarum/forum/components/NotificationGrid';
 import { can, t } from './common';
 
 class PeoplePage extends CatalogPage {
@@ -20,6 +23,11 @@ app.initializers.add('local-acgn-database', () => {
   app.routes['acgn.subject'] = { path: '/acgn/subjects/:id', component: DetailPage };
   app.routes['acgn.people'] = { path: '/acgn/people', component: PeoplePage };
   app.routes['acgn.person'] = { path: '/acgn/people/:id', component: PersonPage };
+  app.routes['acgn.requests'] = { path: '/acgn/import-requests', component: ImportRequestsPage };
+  app.notificationComponents.acgnImportRequest = ImportRequestNotification;
+  extend(NotificationGrid.prototype, 'notificationTypes', function(items) {
+    items.add('acgnImportRequest', { name: 'acgnImportRequest', icon: 'fas fa-file-import', label: t('requests') });
+  });
   extend(IndexPage.prototype, 'navItems', function (items) {
     if (can('View')) items.add('acgn-database', <LinkButton href={app.route('acgn.catalog')} icon="fas fa-book-open">{t('catalog')}</LinkButton>, 15);
   });
