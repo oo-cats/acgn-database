@@ -1,0 +1,137 @@
+local-acgn-database:
+  forum:
+    catalog: ACGN 作品库
+    people: 人物与角色
+    new_subject: 新建作品
+    new_person: 新建人物／角色
+    edit: 编辑资料
+    save: 保存
+    type: 作品类型
+    kind: 人物类型
+    anime: 动画
+    manga: 漫画
+    game: 游戏
+    novel: 小说
+    person: 人物／机构
+    character: 角色
+    title: 作品名称
+    name: 人物／角色名称
+    original_title: 原文名称
+    original_name: 原文姓名
+    aliases: 别名
+    summary: 简介
+    cover_url: 封面 HTTPS 地址
+    image_url: 头像 HTTPS 地址
+    release_date: 发行／首播日期
+    total_units: 总进度（集／话／章，可留空）
+    tags: 标签
+    list_hint: 使用顿号、逗号或换行分隔。
+    search: 搜索
+    search_label: 搜索名称或别名
+    search_placeholder: 搜索作品、人物或别名…
+    all: 全部类型
+    my_collection: 我的收藏记录
+    archived_only: 仅看已归档
+    archived: 此资料已归档，普通读者不可见。
+    archive: 归档
+    restore: 恢复
+    archive_confirm: 确定归档此资料？个人记录和关联关系会保留。
+    restore_confirm: 确定恢复此资料？恢复后将重新对读者可见。
+    empty: 暂无符合条件的资料。
+    previous: 上一页
+    next: 下一页
+    load_error: 无法加载资料。请确认资料存在且你有访问权限。
+    retry: 重试
+    no_access: 你没有访问 acgn-database 的权限。
+    local_rating: 站内评分
+    source_rating: Bangumi 来源评分
+    rating_count: "{count} 人评分"
+    rating_mean: 样本均值
+    rating_variance: 样本方差
+    rating_distribution: 1–10 分人数分布
+    rating_bucket: "{score} 分：{count} 人（{percentage}%）"
+    rating_method: 仅统计站内有效评分；样本方差的分母为评分人数减一，不足两份评分时不显示方差。
+    rating_empty: 暂无评分；未评分的收藏不计入统计。
+    units: "总进度 {count}"
+    view_source: 查看 Bangumi 来源
+    no_summary: 暂无简介。
+    credits: 角色与制作人员
+    works: 关联作品
+    role: 职责／角色类型
+    add_credit: 添加人物关系
+    search_people: 按名称搜索人物／角色
+    select_person: 请选择已建档人物／角色
+    unlink: 解除关联
+    unlink_credit_confirm: 确定解除此人物与作品的关系？
+    no_relations: 暂无关联资料。
+    relations_more: 当前显示前 200 条关系，其余可在人物或作品库检索。
+    my_record: 我的记录
+    login_to_collect: 登录后评分收藏
+    collection_unavailable: 当前无法更新个人记录。
+    record_privacy: 个人状态、进度、收藏和短评仅自己可见；评分计入公开的样本均值、样本方差和人数分布，不公开评分者名单。
+    comments: 我的短评
+    comments_hint: 最多 2000 字，按纯文本保存，仅自己可见。
+    no_comments: 暂无短评。
+    status: 收藏状态
+    planned: 想看／想读／想玩
+    current: 在看／在读／在玩
+    completed: 已完成
+    on_hold: 搁置
+    dropped: 放弃
+    my_score: 我的评分（1–10 分）
+    unrated: 暂不评分
+    progress: 当前进度（集／话／章）
+    favorite: 标为特别收藏
+    save_record: 保存个人记录
+    remove_record: 移除个人记录
+    remove_record_confirm: 确定移除个人记录和评分？
+    discussions: 相关论坛讨论
+    no_discussions: 暂无你可见的相关讨论。
+    discussions_more: 当前显示最近 50 条可见讨论。
+    discussion_link: 本站讨论链接或讨论编号
+    link_discussion: 关联讨论
+    invalid_discussion: 请输入本站的讨论链接或有效讨论编号。
+    related_works: 相关 ACGN 作品
+    import: 从 Bangumi 导入
+    import_hint: 输入作品 ID 或 Bangumi 作品链接，预览后确认。每次只导入一部作品及有限的人物关系。
+    bangumi_subject: Bangumi 作品 ID／链接
+    book_hint: Bangumi 将漫画和小说统称为书籍，请按作品实际类型选择。
+    preview: 预览导入
+    confirm_import: 确认导入
+    import_counts: "包含 {people} 位人物／角色，{credits} 条作品关系。"
+    truncated: 关联资料达到单次上限，仅导入预览中列出的关系，其余可手动补充。
+    import_preserve: 来源 ID 自动去重；重复导入只补充空字段及关系，保留人工资料；来源评分会更新。预览十分钟内有效，新预览会替换旧预览。
+    personal_import: 导入我的 Bangumi 观影记录
+    personal_import_hint: 核验本人 Bangumi 账号，逐页预览动画收藏的状态、评分、集数进度和短评，勾选后保存为本站个人记录。
+    personal_access_token: Bangumi Access Token
+    personal_token_hint: 请使用本人在 Bangumi 生成的 Access Token。仅用于本次窗口中的身份核验和读取，不保存到数据库；关闭窗口即清除。
+    personal_read: 读取并预览第一页
+    personal_continue: 继续预览下一页
+    personal_identity: "已核验账号：{username}；动画收藏共 {total} 条，当前从第 {offset} 条之后读取。"
+    personal_mapping_hint: 每页最多 20 条。仅匹配站内已有的 Bangumi 动画条目；缺少的公共条目需管理员先导入。特别收藏标记保留本站原值。
+    personal_empty: 此页没有动画收藏。
+    personal_local_entry: 查看站内条目
+    personal_unavailable_missing: 站内尚无对应条目，请管理员先导入。
+    personal_unavailable_archived: 站内条目已归档，暂时无法导入记录。
+    personal_unavailable_type: 站内条目类型不是动画，请管理员核对。
+    personal_unavailable_progress: 来源进度超过站内总集数，请管理员核对条目进度。
+    personal_source_record: 来源个人记录
+    personal_existing: 查看已有站内记录（默认不勾选）
+    personal_conflict: 已有站内记录的处理
+    personal_skip: 保留已有记录，跳过选中的重复项
+    personal_replace: 用预览值替换选中的已有记录
+    personal_consent: 我确认短评、状态和进度仅本人可见；导入评分将参与本站公开的匿名评分统计。
+    personal_preview_expiry: 预览十分钟有效；确认后立即失效。两次来源读取至少间隔十秒。来源更新时间不代表实际观看日期。
+    personal_confirm: "确认导入选中的 {count} 条"
+    personal_import_result: "已导入 {imported} 条，保留并跳过 {skipped} 条已有记录。"
+    personal_import_error: 无法完成导入，请查看错误提示。检查管理员是否已配置 Bangumi 来源身份、Token 是否有效，或重新预览后重试。
+    personal_imported_at: "由 Bangumi 导入，导入时间（UTC）：{date}。此时间不是观看日期。"
+  admin:
+    user_agent: Bangumi User-Agent
+    user_agent_help: "按 Bangumi 官方要求填写开发者 ID／应用名称／版本，例如 your-bgm-id/acgn-database/0.1.0；请替换示例 ID，开源项目可附项目地址。未配置时不能导入。"
+    view: 查看 acgn-database
+    collect: 保存个人评分与收藏
+    manage: 创建、编辑、归档作品与人物
+    import: 从 Bangumi 导入作品与人物
+    import_collection: 导入本人 Bangumi 观影记录
+    link: 管理作品与讨论的关联

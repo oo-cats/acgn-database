@@ -1,0 +1,41 @@
+<?php
+
+use Flarum\Extend;
+use Flarum\Api\Serializer\ForumSerializer;
+use Local\AcgnDatabase\Api\Controller;
+use Local\AcgnDatabase\Api\CollectionImportController;
+use Local\AcgnDatabase\ForumAttributes;
+
+$api = new Extend\Routes('api');
+foreach (['subjects', 'people'] as $resource) {
+    $prefix = 'local-acgn-database.'.$resource;
+    $api->get('/acgn/'.$resource, $prefix.'.index', Controller::class)
+        ->post('/acgn/'.$resource, $prefix.'.create', Controller::class)
+        ->get('/acgn/'.$resource.'/{id:\d+}', $prefix.'.show', Controller::class)
+        ->patch('/acgn/'.$resource.'/{id:\d+}', $prefix.'.update', Controller::class)
+        ->put('/acgn/'.$resource.'/{id:\d+}/archive', $prefix.'.archive', Controller::class);
+}
+$api->put('/acgn/subjects/{id:\d+}/record', 'local-acgn-database.record.save', Controller::class)
+    ->delete('/acgn/subjects/{id:\d+}/record', 'local-acgn-database.record.delete', Controller::class)
+    ->post('/acgn/subjects/{id:\d+}/credits', 'local-acgn-database.credits.save', Controller::class)
+    ->delete('/acgn/subjects/{id:\d+}/credits', 'local-acgn-database.credits.delete', Controller::class)
+    ->put('/acgn/subjects/{id:\d+}/discussions/{discussion:\d+}', 'local-acgn-database.discussions.save', Controller::class)
+    ->delete('/acgn/subjects/{id:\d+}/discussions/{discussion:\d+}', 'local-acgn-database.discussions.delete', Controller::class)
+    ->get('/acgn/discussions/{discussion:\d+}/subjects', 'local-acgn-database.discussions.subjects', Controller::class)
+    ->post('/acgn/import/bangumi/preview', 'local-acgn-database.import.preview', Controller::class)
+    ->post('/acgn/import/bangumi/confirm', 'local-acgn-database.import.confirm', Controller::class);
+$api->post('/acgn/collection-import/preview', 'local-acgn-database.collection.preview', CollectionImportController::class)
+    ->post('/acgn/collection-import/confirm', 'local-acgn-database.collection.confirm', CollectionImportController::class)
+    ->delete('/acgn/collection-import', 'local-acgn-database.collection.discard', CollectionImportController::class);
+
+return [
+    $api,
+    (new Extend\Frontend('forum'))->js(__DIR__.'/js/dist/forum.js')->css(__DIR__.'/resources/forum.less')
+        ->route('/acgn', 'local-acgn-database.catalog')
+        ->route('/acgn/subjects/{id:\d+}', 'local-acgn-database.subject')
+        ->route('/acgn/people', 'local-acgn-database.people')
+        ->route('/acgn/people/{id:\d+}', 'local-acgn-database.person'),
+    (new Extend\Frontend('admin'))->js(__DIR__.'/js/dist/admin.js'),
+    (new Extend\ApiSerializer(ForumSerializer::class))->attributes(ForumAttributes::class),
+    new Extend\Locales(__DIR__.'/resources/locale'),
+];

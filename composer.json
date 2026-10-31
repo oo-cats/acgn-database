@@ -1,0 +1,32 @@
+{
+  "name": "local/acgn-database",
+  "description": "ACGN works, characters, staff, personal collections and discussion links for Flarum",
+  "type": "flarum-extension",
+  "version": "0.1.0",
+  "license": "MIT",
+  "require": {
+    "php": "^8.3",
+    "flarum/core": "^1.8",
+    "guzzlehttp/guzzle": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Local\\AcgnDatabase\\": "src/"
+    }
+  },
+  "extra": {
+    "flarum-extension": {
+      "title": "acgn-database",
+      "icon": {
+        "name": "fas fa-book-open",
+        "backgroundColor": "#41677c",
+        "color": "#fff"
+      }
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

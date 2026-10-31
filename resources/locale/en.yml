@@ -1,0 +1,137 @@
+local-acgn-database:
+  forum:
+    catalog: ACGN Library
+    people: People & Characters
+    new_subject: Add work
+    new_person: Add person / character
+    edit: Edit details
+    save: Save
+    type: Work type
+    kind: Person type
+    anime: Anime
+    manga: Manga
+    game: Game
+    novel: Novel
+    person: Person / organization
+    character: Character
+    title: Title
+    name: Name
+    original_title: Original title
+    original_name: Original name
+    aliases: Aliases
+    summary: Summary
+    cover_url: Cover HTTPS URL
+    image_url: Portrait HTTPS URL
+    release_date: Release date
+    total_units: Total episodes / chapters (optional)
+    tags: Tags
+    list_hint: Separate items with commas or newlines.
+    search: Search
+    search_label: Search names or aliases
+    search_placeholder: Search works, people or aliases…
+    all: All types
+    my_collection: My collection
+    archived_only: Archived only
+    archived: This entry is archived and hidden from regular readers.
+    archive: Archive
+    restore: Restore
+    archive_confirm: Archive this entry? Personal records and relationships will be retained.
+    restore_confirm: Restore this entry and make it visible to readers again?
+    empty: No matching entries.
+    previous: Previous
+    next: Next
+    load_error: Could not load this content. Check that it exists and you have access.
+    retry: Retry
+    no_access: You do not have access to acgn-database.
+    local_rating: Community rating
+    source_rating: Bangumi rating
+    rating_count: "{count} ratings"
+    rating_mean: Sample mean
+    rating_variance: Sample variance
+    rating_distribution: Rating distribution (1–10)
+    rating_bucket: "{score} points: {count} ratings ({percentage}%)"
+    rating_method: Only valid community ratings count. Sample variance divides by the number of ratings minus one and is unavailable with fewer than two ratings.
+    rating_empty: No ratings yet. Unrated collections are excluded.
+    units: "{count} units total"
+    view_source: View on Bangumi
+    no_summary: No summary yet.
+    credits: Characters & Staff
+    works: Related works
+    role: Credit / role
+    add_credit: Add relationship
+    search_people: Search people / characters by name
+    select_person: Select an existing person / character
+    unlink: Unlink
+    unlink_credit_confirm: Remove this credit from the work?
+    no_relations: No related entries yet.
+    relations_more: Showing the first 200 relationships. Search the library for more entries.
+    my_record: My record
+    login_to_collect: Log in to rate and collect
+    collection_unavailable: Personal records cannot be updated right now.
+    record_privacy: Your status, progress, favorites and short comments are private. Ratings contribute to the public sample mean, sample variance and histogram without a list of raters.
+    comments: My short comment
+    comments_hint: Up to 2000 characters, stored as plain text and visible only to you.
+    no_comments: No short comment.
+    status: Collection status
+    planned: Planned
+    current: In progress
+    completed: Completed
+    on_hold: On hold
+    dropped: Dropped
+    my_score: My rating (1–10)
+    unrated: Not rated
+    progress: Current episode / chapter
+    favorite: Mark as favorite
+    save_record: Save record
+    remove_record: Remove record
+    remove_record_confirm: Remove your record and rating?
+    discussions: Related forum discussions
+    no_discussions: No related discussions visible to you.
+    discussions_more: Showing the latest 50 visible discussions.
+    discussion_link: Discussion URL or discussion number on this forum
+    link_discussion: Link discussion
+    invalid_discussion: Enter a valid discussion URL or number from this forum.
+    related_works: Related ACGN works
+    import: Import from Bangumi
+    import_hint: Enter a work ID or URL and review it before importing. Each import includes one work and a limited number of relationships.
+    bangumi_subject: Bangumi work ID / URL
+    book_hint: Bangumi groups manga and novels as books. Select the correct local category.
+    preview: Preview import
+    confirm_import: Confirm import
+    import_counts: "Includes {people} people / characters and {credits} credits."
+    truncated: The relationship limit was reached. Only the previewed relationships will be imported; add other entries manually.
+    import_preserve: Source IDs prevent duplicates. Reimports fill empty fields and add credits while retaining manual content. Source ratings are refreshed. Previews expire after ten minutes and a new preview replaces your previous one.
+    personal_import: Import my Bangumi viewing records
+    personal_import_hint: Verify your Bangumi account, preview anime collection status, ratings, episode progress and short comments, then select records to save locally.
+    personal_access_token: Bangumi Access Token
+    personal_token_hint: Use an Access Token generated by your own Bangumi account. Used only for verification and reading in this window; never stored in the database and cleared on close.
+    personal_read: Read and preview first page
+    personal_continue: Preview next page
+    personal_identity: "Verified account: {username}; {total} anime records total, reading after offset {offset}."
+    personal_mapping_hint: Up to 20 records per page. Only existing local Bangumi anime entries can be matched; ask an administrator to import missing public entries first. Local favorite flags are preserved.
+    personal_empty: No anime records on this page.
+    personal_local_entry: View local entry
+    personal_unavailable_missing: No matching local entry. Ask an administrator to import it first.
+    personal_unavailable_archived: The local entry is archived and cannot receive imported records.
+    personal_unavailable_type: The local entry is not anime. Ask an administrator to check it.
+    personal_unavailable_progress: Source progress exceeds the local episode total. Ask an administrator to check it.
+    personal_source_record: Source personal record
+    personal_existing: View existing local record (not selected by default)
+    personal_conflict: Handling existing local records
+    personal_skip: Keep existing records and skip selected duplicates
+    personal_replace: Replace selected existing records with preview values
+    personal_consent: I understand that comments, status and progress stay private; imported ratings contribute to public anonymous rating statistics.
+    personal_preview_expiry: Previews expire after ten minutes and are consumed on confirmation. Wait ten seconds between source reads. Source update timestamps are not actual viewing dates.
+    personal_confirm: "Import {count} selected records"
+    personal_import_result: "Imported {imported} records; kept and skipped {skipped} existing records."
+    personal_import_error: Import failed. Check the error message, administrator source configuration and Access Token, or load a new preview and try again.
+    personal_imported_at: "Imported from Bangumi at {date} (UTC). This is not the viewing date."
+  admin:
+    user_agent: Bangumi User-Agent
+    user_agent_help: "Use your developer ID / application / version, for example your-bgm-id/acgn-database/0.1.0. Replace the example ID and append the project URL if open source. Required for imports."
+    view: View acgn-database
+    collect: Save personal ratings and collections
+    manage: Create, edit and archive works and people
+    import: Import works and people from Bangumi
+    import_collection: Import own Bangumi viewing records
+    link: Manage links between works and discussions
