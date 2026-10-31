@@ -7,6 +7,7 @@ namespace Local\AcgnDatabase\Import;
 use Flarum\User\User;
 use Illuminate\Database\ConnectionInterface;
 use Local\AcgnDatabase\Input;
+use Local\AcgnDatabase\RecordActivity;
 
 final class CollectionImporter
 {
@@ -110,6 +111,9 @@ final class CollectionImporter
                 $now = gmdate('Y-m-d H:i:s');
                 $fields = $item['record'];
                 $fields['favorite'] = $existing ? (bool) $existing->favorite : false;
+                $fields += RecordActivity::changes($fields, $existing, true);
+                // Source history must not inherit a prior public sharing grant.
+                $fields += ['share_visibility' => 'self', 'share_score' => false, 'share_progress' => false];
                 $fields += ['revision' => $existing ? $existing->revision + 1 : 0, 'updated_at' => $now, 'imported_from' => 'bangumi',
                     'imported_account' => $payload['account']['id'], 'source_updated_at' => $item['source_updated_at'], 'imported_at' => $now];
                 if ($existing) $this->db->table('acgn_records')->where($key)->update($fields);

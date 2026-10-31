@@ -4,6 +4,7 @@ use Flarum\Extend;
 use Flarum\Api\Serializer\ForumSerializer;
 use Local\AcgnDatabase\Api\Controller;
 use Local\AcgnDatabase\Api\CollectionImportController;
+use Local\AcgnDatabase\Api\ShowcaseController;
 use Local\AcgnDatabase\ForumAttributes;
 
 $api = new Extend\Routes('api');
@@ -27,6 +28,12 @@ $api->put('/acgn/subjects/{id:\d+}/record', 'local-acgn-database.record.save', C
 $api->post('/acgn/collection-import/preview', 'local-acgn-database.collection.preview', CollectionImportController::class)
     ->post('/acgn/collection-import/confirm', 'local-acgn-database.collection.confirm', CollectionImportController::class)
     ->delete('/acgn/collection-import', 'local-acgn-database.collection.discard', CollectionImportController::class);
+$api->get('/acgn/users/{user:\d+}/showcases/recent-watching', 'local-acgn-database.showcase.watching', ShowcaseController::class)
+    ->get('/acgn/users/{user:\d+}/showcases/recent-ratings', 'local-acgn-database.showcase.ratings', ShowcaseController::class)
+    ->get('/acgn/showcases/settings', 'local-acgn-database.showcase.settings', ShowcaseController::class)
+    ->put('/acgn/showcases/settings', 'local-acgn-database.showcase.settings.save', ShowcaseController::class)
+    ->patch('/acgn/subjects/{id:\d+}/record/sharing', 'local-acgn-database.showcase.sharing', ShowcaseController::class)
+    ->post('/acgn/subjects/{id:\d+}/record/activity', 'local-acgn-database.showcase.activity', ShowcaseController::class);
 
 return [
     $api,

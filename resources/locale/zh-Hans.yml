@@ -68,7 +68,7 @@ local-acgn-database:
     my_record: 我的记录
     login_to_collect: 登录后评分收藏
     collection_unavailable: 当前无法更新个人记录。
-    record_privacy: 个人状态、进度、收藏和短评仅自己可见；评分计入公开的样本均值、样本方差和人数分布，不公开评分者名单。
+    record_privacy: 记录默认仅自己可见；状态、评分和进度可另外授权展柜分享，收藏标记和短评始终私有。评分计入公开的样本均值、样本方差和人数分布。
     comments: 我的短评
     comments_hint: 最多 2000 字，按纯文本保存，仅自己可见。
     no_comments: 暂无短评。
@@ -108,7 +108,7 @@ local-acgn-database:
     personal_read: 读取并预览第一页
     personal_continue: 继续预览下一页
     personal_identity: "已核验账号：{username}；动画收藏共 {total} 条，当前从第 {offset} 条之后读取。"
-    personal_mapping_hint: 每页最多 20 条。仅匹配站内已有的 Bangumi 动画条目；缺少的公共条目需管理员先导入。特别收藏标记保留本站原值。
+    personal_mapping_hint: 每页最多 20 条。仅匹配站内已有的 Bangumi 动画条目；缺少的公共条目需管理员先导入。保留特别收藏标记，导入或替换后记录设为私有。
     personal_empty: 此页没有动画收藏。
     personal_local_entry: 查看站内条目
     personal_unavailable_missing: 站内尚无对应条目，请管理员先导入。
@@ -120,7 +120,7 @@ local-acgn-database:
     personal_conflict: 已有站内记录的处理
     personal_skip: 保留已有记录，跳过选中的重复项
     personal_replace: 用预览值替换选中的已有记录
-    personal_consent: 我确认短评、状态和进度仅本人可见；导入评分将参与本站公开的匿名评分统计。
+    personal_consent: 我确认导入或替换后的记录设为私有；短评始终仅本人可见，导入评分将参与本站公开的匿名评分统计。
     personal_preview_expiry: 预览十分钟有效；确认后立即失效。两次来源读取至少间隔十秒。来源更新时间不代表实际观看日期。
     personal_confirm: "确认导入选中的 {count} 条"
     personal_import_result: "已导入 {imported} 条，保留并跳过 {skipped} 条已有记录。"

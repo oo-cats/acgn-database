@@ -117,10 +117,11 @@ final class Catalog
             if ($row->total_units !== null && $fields['progress'] > $row->total_units) Input::fail('progress', '进度不能超过作品总进度。');
             $now = gmdate('Y-m-d H:i:s');
             $existing = $this->db->table('acgn_records')->where($key)->first();
+            $activity = RecordActivity::changes($fields, $existing, false, $row->type);
             if ($existing) {
-                $this->db->table('acgn_records')->where($key)->update($fields + ['revision' => $existing->revision + 1, 'updated_at' => $now]);
+                $this->db->table('acgn_records')->where($key)->update($fields + $activity + ['revision' => $existing->revision + 1, 'updated_at' => $now]);
             } else {
-                $this->db->table('acgn_records')->insert($key + $fields + ['created_at' => $now, 'updated_at' => $now]);
+                $this->db->table('acgn_records')->insert($key + $fields + $activity + ['created_at' => $now, 'updated_at' => $now]);
             }
         });
         return $this->detail($subject, $actor);
@@ -222,6 +223,8 @@ final class Catalog
                     $record['favorite'] = (bool) $record['favorite'];
                     $record['comments'] = $record['comments'] ?? '';
                     $record['revision'] = (int) $record['revision'];
+                    $record['share_score'] = (bool) $record['share_score'];
+                    $record['share_progress'] = (bool) $record['share_progress'];
                 }
                 $value['my_record'] = $record;
             }

@@ -68,7 +68,7 @@ local-acgn-database:
     my_record: My record
     login_to_collect: Log in to rate and collect
     collection_unavailable: Personal records cannot be updated right now.
-    record_privacy: Your status, progress, favorites and short comments are private. Ratings contribute to the public sample mean, sample variance and histogram without a list of raters.
+    record_privacy: Records are private by default. Status, ratings and progress can be shared separately through showcases; favorites and short comments always stay private. Ratings contribute to the public sample mean, sample variance and histogram.
     comments: My short comment
     comments_hint: Up to 2000 characters, stored as plain text and visible only to you.
     no_comments: No short comment.
@@ -108,7 +108,7 @@ local-acgn-database:
     personal_read: Read and preview first page
     personal_continue: Preview next page
     personal_identity: "Verified account: {username}; {total} anime records total, reading after offset {offset}."
-    personal_mapping_hint: Up to 20 records per page. Only existing local Bangumi anime entries can be matched; ask an administrator to import missing public entries first. Local favorite flags are preserved.
+    personal_mapping_hint: Up to 20 records per page. Only existing local Bangumi anime entries can be matched; ask an administrator to import missing public entries first. Favorite flags are preserved; imported or replaced records become private.
     personal_empty: No anime records on this page.
     personal_local_entry: View local entry
     personal_unavailable_missing: No matching local entry. Ask an administrator to import it first.
@@ -120,7 +120,7 @@ local-acgn-database:
     personal_conflict: Handling existing local records
     personal_skip: Keep existing records and skip selected duplicates
     personal_replace: Replace selected existing records with preview values
-    personal_consent: I understand that comments, status and progress stay private; imported ratings contribute to public anonymous rating statistics.
+    personal_consent: I understand that imported or replaced records become private. Short comments always stay private; imported ratings contribute to public anonymous rating statistics.
     personal_preview_expiry: Previews expire after ten minutes and are consumed on confirmation. Wait ten seconds between source reads. Source update timestamps are not actual viewing dates.
     personal_confirm: "Import {count} selected records"
     personal_import_result: "Imported {imported} records; kept and skipped {skipped} existing records."
